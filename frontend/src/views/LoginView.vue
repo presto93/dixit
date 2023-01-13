@@ -1,5 +1,5 @@
 <template>
-
+  <h1>this is login view!!</h1>
 </template>
 
 <script>

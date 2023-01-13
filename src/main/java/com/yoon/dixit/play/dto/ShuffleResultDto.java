@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Setter
 @Getter

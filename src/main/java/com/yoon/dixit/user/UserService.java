@@ -4,10 +4,7 @@ import com.yoon.dixit.user.vo.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -15,29 +12,32 @@ public class UserService {
 
 
     public User login(String id) {
-        User user = getUser(id);
+        Optional<User> userOptional = getUser(id);
+        User user;
 
-        if (Objects.isNull(user)) {
+        if (userOptional.isPresent()) {
+
+            user = userOptional.get();
+
+        } else {
             user = User.builder()
                     .id(id)
                     .build();
+            users.add(user);
         }
-
-        users.add(user);
 
         return user;
     }
 
     public void logout(String id) {
-        users.remove(getUser(id));
+        getUser(id).ifPresent(users::remove);
     }
 
-    public User getUser(String id) {
+    public Optional<User> getUser(String id) {
 
         return users.stream()
                 .filter(user -> StringUtils.equals(user.getId(), id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("invalid user id " + id));
+                .findFirst();
     }
 
     public boolean isFirst(String id) {

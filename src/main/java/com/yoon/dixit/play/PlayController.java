@@ -4,15 +4,13 @@ import com.yoon.dixit.play.dto.ShuffleResultDto;
 import com.yoon.dixit.play.vo.Card;
 import com.yoon.dixit.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
-@RestController("/play")
-@CrossOrigin("*")
+@RestController
+@RequestMapping("/api/play")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class PlayController {
 
     private final PlayService playService;
@@ -22,7 +20,8 @@ public class PlayController {
 
     @GetMapping("/start")
     public void start() {
-        playService.initGame();
+        System.out.println("start!!");
+//        playService.initGame();
     }
 
     @GetMapping("/card")

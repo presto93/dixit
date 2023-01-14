@@ -2,7 +2,7 @@ package com.yoon.dixit.play;
 
 import com.yoon.dixit.play.dto.ShuffleResultDto;
 import com.yoon.dixit.play.vo.Card;
-import com.yoon.dixit.user.UserService;
+import com.yoon.dixit.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +29,7 @@ public class PlayController {
 
         return ShuffleResultDto.builder()
                 .cards(playService.getCards())
-                .first(userService.isFirst(userId))
+                .first(userService.isLeader(userId))
                 .build();
     }
 

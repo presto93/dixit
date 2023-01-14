@@ -1,6 +1,7 @@
 package com.yoon.dixit.user;
 
 import com.yoon.dixit.user.dto.UserDto;
+import com.yoon.dixit.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +17,18 @@ public class UserController {
         return userService.login(userId).toDto();
     }
 
-    @GetMapping("/shuffle")
-    public void shuffleOrder() {
-        userService.shuffleOrder();
+    @PutMapping("/logout")
+    public void logout(@RequestBody String userId) {
+        System.out.println("logout " + userId);
+        userService.logout(userId);
     }
 
-    @GetMapping("/clear")
+    @PutMapping("/change-leader")
+    public void shuffleOrder() {
+        userService.changeLeader();
+    }
+
+    @PutMapping("/clear")
     public void clearUsers() {
         userService.clearUsers();
     }

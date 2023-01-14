@@ -1,7 +1,7 @@
 package com.yoon.dixit.play;
 
 import com.yoon.dixit.play.vo.Card;
-import com.yoon.dixit.user.UserService;
+import com.yoon.dixit.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +20,8 @@ public class PlayService {
     private final List<Card> selectedCard = new ArrayList<>();
     private Card targetCard = null;
     private final LinkedList<Integer> displayOrder = new LinkedList<>();
+
+    private static boolean nowPlaying = false;
 
     private static final int MAX_NUMBER_OF_CARD = 6;
     private static final int TOTAL_NUMBER_OF_CARD = 50;
@@ -40,6 +42,9 @@ public class PlayService {
         Collections.shuffle(cards);
     }
 
+    synchronized public boolean isNowPlaying() {
+        return nowPlaying;
+    }
 
     synchronized public List<Card> getCards() {
 

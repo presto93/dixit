@@ -14,5 +14,5 @@ import java.io.File;
 public class Card {
     private int id;
     private File file;
-    private boolean target;
+    private boolean isTarget;
 }

@@ -1,49 +1,52 @@
 package com.yoon.dixit.play;
 
 import com.yoon.dixit.play.vo.Card;
+import com.yoon.dixit.user.enums.PlayingStatus;
+import com.yoon.dixit.user.enums.ReadyStatus;
 import com.yoon.dixit.user.service.UserService;
+import com.yoon.dixit.user.service.UsersService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class PlayService {
     private final UserService userService;
+    private final UsersService usersService;
 
+    private static final List<Card> cards = new ArrayList<>();
+    private static final LinkedList<Card> dummy = new LinkedList<>();
 
-    private final LinkedList<Card> cards = new LinkedList<>();
     private final List<Card> selectedCard = new ArrayList<>();
     private Card targetCard = null;
     private final LinkedList<Integer> displayOrder = new LinkedList<>();
 
-    private static boolean nowPlaying = false;
+    private static PlayingStatus playingStatus = PlayingStatus.WAITING;
 
     private static final int MAX_NUMBER_OF_CARD = 6;
     private static final int TOTAL_NUMBER_OF_CARD = 50;
+    private static final int MIN_PAYER_COUNT = 3;
 
     // get cards from file
     // cards to immutable list
 
     public void initGame() {
         // for test
-        cards.clear();
-        for (int i = 0; i < TOTAL_NUMBER_OF_CARD; i++) {
-            cards.add(Card.builder()
-                    .id(i)
-                    .build());
+        if (CollectionUtils.isEmpty(cards)) {
+            for (int i = 0; i < TOTAL_NUMBER_OF_CARD; i++) {
+                cards.add(Card.builder()
+                        .id(i)
+                        .build());
+            }
+            dummy.addAll(cards);
         }
         // for test
 
-        Collections.shuffle(cards);
-    }
-
-    synchronized public boolean isNowPlaying() {
-        return nowPlaying;
+        Collections.shuffle(dummy);
+        dummy.addAll(selectedCard);
     }
 
     synchronized public List<Card> getCards() {
@@ -51,7 +54,7 @@ public class PlayService {
         List<Card> userCard = new ArrayList<>();
 
         for (int i = 0; i < MAX_NUMBER_OF_CARD; i++) {
-            userCard.add(cards.remove());
+            userCard.add(dummy.pollFirst());
         }
 
         return userCard;
@@ -59,7 +62,7 @@ public class PlayService {
 
     public void arrangeGame() {
         displayOrder.clear();
-        int playerCount = userService.getUserCount();
+        int playerCount = usersService.getUserCount();
 
         for (int i = 0; i < playerCount; i++) {
             displayOrder.add(i);
@@ -75,13 +78,19 @@ public class PlayService {
     }
 
     private Card getCard(int cardId) {
-        return cards.stream()
-                .filter(c -> c.getId() == cardId).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Invalid card " + cardId));
+        return cards.get(cardId);
     }
 
-    public void selectCard(int cardId) {
-        selectCard(getCard(cardId));
+    public void selectCard(String userId, int cardId) {
+
+        if (usersService.isLeader(userId)) {
+            arrangeGame();
+            selectTargetCard(cardId);
+
+        } else {
+
+            selectCard(getCard(cardId));
+        }
     }
 
     public void selectCard(Card card) {
@@ -94,5 +103,20 @@ public class PlayService {
 
     public Card getDisplayCard() {
         return selectedCard.get(displayOrder.remove());
+    }
+
+    synchronized public ReadyStatus ready(String userId) {
+        userService.ready(userId);
+
+        return usersService.getReadyStatus(MIN_PAYER_COUNT);
+    }
+
+    public PlayingStatus getPlayingStatus() {
+        return playingStatus;
+    }
+
+    public void startGame() {
+        initGame();
+        playingStatus = PlayingStatus.PLAYING;
     }
 }

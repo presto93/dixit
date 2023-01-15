@@ -1,10 +1,13 @@
 package com.yoon.dixit.play;
 
-import com.yoon.dixit.play.dto.ShuffleResultDto;
 import com.yoon.dixit.play.vo.Card;
+import com.yoon.dixit.user.enums.PlayingStatus;
+import com.yoon.dixit.user.enums.ReadyStatus;
 import com.yoon.dixit.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -18,30 +21,30 @@ public class PlayController {
     private final UserService userService;
 
 
-    @GetMapping("/start")
-    public void start() {
-        System.out.println("start!!");
-//        playService.initGame();
+    @PutMapping("/ready")
+    public ReadyStatus ready(@RequestParam String userId) {
+        return playService.ready(userId);
+    }
+
+    @GetMapping("/status")
+    public PlayingStatus getPlayingStatus() {
+        return playService.getPlayingStatus();
+    }
+
+    @PostMapping("/start")
+    public void startGame() {
+        playService.startGame();
     }
 
     @GetMapping("/card")
-    public ShuffleResultDto getCards(@RequestParam String userId) {
+    public List<Card> getCards() {
 
-        return ShuffleResultDto.builder()
-                .cards(playService.getCards())
-                .first(userService.isLeader(userId))
-                .build();
+        return playService.getCards();
     }
 
-    @GetMapping("/select-target")
-    public void selectTargetCard(@RequestParam int cardId) {
-        playService.arrangeGame();
-        playService.selectTargetCard(cardId);
-    }
-
-    @GetMapping("/select")
-    public void selectCard(@RequestParam int cardId) {
-        playService.selectCard(cardId);
+    @PostMapping("/select")
+    public void selectCard(@RequestParam String userId, @RequestParam int cardId) {
+        playService.selectCard(userId, cardId);
     }
 
     @GetMapping("/finish")

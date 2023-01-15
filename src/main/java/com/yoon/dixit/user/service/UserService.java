@@ -46,16 +46,4 @@ public class UserService {
     public boolean isLeader(String id) {
         return usersService.isLeader(id);
     }
-
-    public void changeLeader() {
-        usersService.changeLeader();
-    }
-
-    synchronized public int getUserCount() {
-        return usersService.getUserCount();
-    }
-
-    public void clearUsers() {
-        usersService.clearUsers();
-    }
 }

@@ -1,14 +1,8 @@
 package com.yoon.dixit.user.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.yoon.dixit.play.vo.Card;
 import com.yoon.dixit.user.dto.UserDto;
 import com.yoon.dixit.user.enums.PlayingStatus;
 import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,11 +14,12 @@ public class User {
 
     private PlayingStatus playingStatus;
 
-    private LocalDateTime lastAccessed;
+    boolean isLeader;
 
     public UserDto toDto() {
         return UserDto.builder()
                 .id(id)
+                .isLeader(isLeader)
                 .build();
     }
 }

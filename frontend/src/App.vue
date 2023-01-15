@@ -3,25 +3,36 @@
     <v-main
         v-if="userId"
     >
-      <v-container>
-
-        <router-view/>
-      </v-container>
-      <v-container>
+      <router-view/>
+      <v-bottom-navigation>
 
         <v-btn
+            @click="goToAdminPage"
+            x-small
+        >
+          admin
+        </v-btn>
+        <v-btn
+            @click="startGame"
+            x-small
+        >
+          dixit
+        </v-btn>
+        <v-btn
             @click="logout"
-            small
+            x-small
         >
           logout
         </v-btn>
-      </v-container>
+      </v-bottom-navigation>
     </v-main>
 
     <v-main
         v-else
     >
-      <v-card>
+      <v-card id="login-area"
+        align="center"
+      >
         <v-text-field
             v-model="userIdInput"
             single-line
@@ -29,8 +40,8 @@
             placeholder="username"
         />
         <v-btn
+            id="login-button"
             @click="login"
-            block
             color="primary"
         >submit
         </v-btn>
@@ -53,25 +64,19 @@ export default defineComponent({
 
     const userId = ref(null)
     const userIdInput = ref(null)
-    let isLeader: boolean = false
 
     onMounted(() => {
       window.addEventListener("unload", logout)
     })
 
     const login = () => {
-      axios.post("/api/user/login", {
+      axios.post("/dixit/api/user/login", {
         userId: userIdInput.value,
       }).then((response) => {
         userId.value = response.data.id
-        isLeader = response.data.isLeader
         userIdInput.value = null
 
-        if (isLeader) {
-          router.push(`/start?userId=${userId.value}`)
-        } else {
-          router.push(`/ready?userId=${userId.value}`)
-        }
+        router.push(`/ready?userId=${userId.value}`)
       })
     }
 
@@ -79,19 +84,32 @@ export default defineComponent({
       if (!userId.value) {
         return
       }
-      axios.put("/api/user/logout", {
+      axios.put("/dixit/api/user/logout", {
         userId: userId.value,
       }).then(() => {
         userId.value = null
         router.push(`/`)
+      }).catch(() => {
+
+        router.push(`/`)
       })
+    }
+
+    const startGame = () => {
+      router.push(`/ready?userId=${userId.value}`)
+    }
+
+    const goToAdminPage = () => {
+      router.push(`/admin?userId=${userId.value}`)
     }
 
     return {
       userId,
       userIdInput,
       login,
-      logout
+      logout,
+      startGame,
+      goToAdminPage,
     }
   },
 
@@ -101,3 +119,16 @@ export default defineComponent({
   methods: {},
 })
 </script>
+
+<style scoped>
+
+#login-area {
+  margin: 50px;
+  padding: 50px;
+}
+
+#login-area > * {
+  margin: 10px 0;
+}
+
+</style>

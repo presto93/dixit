@@ -4,6 +4,7 @@ import ReadyView from '../views/ReadyView.vue'
 import StartView from '../views/StartView.vue'
 import CheckCardView from '../views/CheckCardView.vue'
 import DisplayCardView from '../views/DisplayCardView.vue'
+import AdminView from '../views/AdminView.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -39,6 +40,14 @@ const routes: Array<RouteRecordRaw> = [
         path: '/display-card',
         name: 'display card',
         component: DisplayCardView,
+        props: route => ({
+            userId: route.query.userId,
+        }),
+    },
+    {
+        path: '/admin',
+        name: 'admin',
+        component: AdminView,
         props: route => ({
             userId: route.query.userId,
         }),

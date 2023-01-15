@@ -42,7 +42,7 @@ export default defineComponent({
 
     onMounted(() => {
       console.log('display card onMounted')
-      axios.get(`/api/play/finish`)
+      axios.get(`/dixit/api/play/finish`)
           .then((response) => {
             console.log(response.data)
             card.value = response.data

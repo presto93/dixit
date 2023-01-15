@@ -22,7 +22,7 @@ export default defineComponent({
   methods: {
 
     logout() {
-      axios.post("/api/user/logout", {
+      axios.post("/dixit/api/user/logout", {
         userId: this.userId,
       }).then(() => {
       })

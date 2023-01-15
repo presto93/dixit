@@ -52,7 +52,7 @@ export default defineComponent({
     onMounted(() => {
 
       console.log('CheckCardView onMounted')
-      axios.get(`/api/play/card`)
+      axios.get(`/dixit/api/play/card`)
           .then((response) => {
             cards.value = response.data
           })
@@ -60,7 +60,7 @@ export default defineComponent({
     })
 
     const selectCard = (card: any) => {
-      const url = `/api/play/select?userId=${props.userId}&cardId=${card.id}`
+      const url = `/dixit/api/play/select?userId=${props.userId}&cardId=${card.id}`
       axios.post(url)
           .then(() => {
             card.isTarget = true

@@ -1,5 +1,6 @@
 package com.yoon.dixit.user.service;
 
+import com.yoon.dixit.user.dto.UserDto;
 import com.yoon.dixit.user.enums.PlayingStatus;
 import com.yoon.dixit.user.enums.ReadyStatus;
 import com.yoon.dixit.user.vo.User;
@@ -39,6 +40,14 @@ public class UsersService {
         leader.setLeader(true);
     }
 
+    public void changeLeader(String userId) {
+        if (MapUtils.isEmpty(users)) {
+            return;
+        }
+
+        setLeader(users.get(userId));
+    }
+
     synchronized public int getUserCount() {
         return MapUtils.size(users);
     }
@@ -56,7 +65,9 @@ public class UsersService {
     }
 
     public void remove(String id) {
-        remove(users.get(id));
+        User user = users.get(id);
+
+        remove(user);
     }
 
     public void remove(User user) {
@@ -95,5 +106,12 @@ public class UsersService {
         if (Objects.nonNull(leader)) {
             leader.setLeader(true);
         }
+    }
+
+    public List<UserDto> getAll() {
+        return users.values()
+                .stream()
+                .map(User::toDto)
+                .collect(Collectors.toList());
     }
 }

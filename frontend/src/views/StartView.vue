@@ -1,18 +1,24 @@
 <template>
 
-  <v-btn
-      @click="start"
-      small
-      :disabled="(readyStatus !== 'ALL') || submitting"
+  <v-container
+      align="center"
   >
-    start
-  </v-btn>
+
+    <v-btn
+        @click="start"
+        x-large
+        :disabled="(readyStatus !== 'ALL') || submitting"
+    >
+      start
+    </v-btn>
+  </v-container>
 </template>
 
 <script lang="ts">
 import {defineComponent, onBeforeUnmount, onMounted, ref} from 'vue';
 import {useRouter} from 'vue-router';
 import axios from "axios";
+
 export default defineComponent({
   name: "StartView",
   components: {},
@@ -31,10 +37,8 @@ export default defineComponent({
 
 
     onMounted(() => {
-      console.log('StartView')
-      console.log(props.userId)
       intervalId = setInterval(() => {
-        axios.put(`/api/play/ready?userId=${props.userId}`)
+        axios.put(`/dixit/api/play/ready?userId=${props.userId}`)
             .then(response => {
               readyStatus.value = response.data
             })
@@ -49,7 +53,7 @@ export default defineComponent({
     const start = () => {
       readyStatus.value = 'none'
       submitting.value = true
-      axios.post(`/api/play/start?userId=${props.userId}`)
+      axios.post(`/dixit/api/play/start?userId=${props.userId}`)
           .then(() => {
             if (intervalId) {
               clearInterval(intervalId)

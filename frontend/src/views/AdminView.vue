@@ -1,37 +1,48 @@
 <template>
 
   <v-container>
-    <v-list>
+    <v-row
+        v-for="user in users"
+        v-bind:key="user.id"
+    >
 
-      <v-list-item
-          v-for="user in users"
-          v-bind:key="user.id"
+      <v-col
+          class="userIdDisplay"
+          v-text="user.id"
+          cols="8"
+          align="center"
+      >
+      </v-col>
+
+      <v-col
+
+          align="center"
       >
 
-        <v-list-item-title
-            v-text="user.id"
+        <v-icon
+            v-if="!user.isLeader"
+            @click="changeLeader(user.id)"
         >
-        </v-list-item-title>
+          mdi-swap-horizontal
+        </v-icon>
+      </v-col>
 
-        <v-list-item-action>
-          <v-icon
-              v-if="!user.isLeader"
-              @click="changeLeader(user.id)"
-          >
-            mdi-swap-horizontal
-          </v-icon>
-          <v-icon
-              v-if="user.id !== userId"
-              @click="kickOutUser(user.id)"
-          >
-            mdi-close
-          </v-icon>
-        </v-list-item-action>
+      <v-col
 
-      </v-list-item>
+          align="center"
+      >
+
+        <v-icon
+            v-if="user.id !== userId"
+            @click="kickOutUser(user.id)"
+        >
+          mdi-close
+        </v-icon>
+      </v-col>
+
+    </v-row>
 
 
-    </v-list>
   </v-container>
 </template>
 
@@ -79,7 +90,7 @@ export default defineComponent({
           })
     }
 
-    let intervalId : number | null = null
+    let intervalId: number | null = null
 
     onMounted(() => {
       console.log(props.userId)

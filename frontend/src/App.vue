@@ -67,6 +67,21 @@ export default defineComponent({
 
     onMounted(() => {
       window.addEventListener("unload", logout)
+      let connection: WebSocket | null = null
+
+      console.log("Starting connection to WebSocket Server");
+      connection = new WebSocket('http://localhost:8080');
+
+      connection.onmessage = (event) => {
+        console.log("look, I got something from server");
+        console.log(event.data);
+      };
+
+      connection.onopen = (event) => {
+        console.log(event);
+        console.log("Successfully connected to the echo websocket server...");
+      };
+
     })
 
     const login = () => {

@@ -10,7 +10,11 @@ module.exports = defineConfig({
                 target: 'http://localhost:8080/', // 프록시를 설정할 도메인
                 changeOrigin: true,
             },
-        }
+            '/ws': {
+                target: 'http://localhost:8080/', // 프록시를 설정할 도메인
+                changeOrigin: true,
+            },
+        },
     },
 
     pluginOptions: {
@@ -18,5 +22,5 @@ module.exports = defineConfig({
 			// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
 		}
     },
-    publicPath: '/dixit'
+    publicPath: '/dixit',
 })

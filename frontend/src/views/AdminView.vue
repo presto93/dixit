@@ -47,8 +47,10 @@
 </template>
 
 <script lang="ts">
+import type {Ref} from 'vue'
 import {defineComponent, onMounted, onUnmounted, ref} from 'vue';
 import axios from "axios";
+import {DixitWebSocket} from "@/components/WebSocket";
 
 export default defineComponent({
   name: "DisplayCardView",
@@ -63,47 +65,67 @@ export default defineComponent({
       required: true
     },
   },
-  setup(props) {
-    const users = ref(null)
+  setup() {
+    const users: Ref<any[]> = ref([])
 
     const getUsers = () => {
       axios.get(`/dixit/api/user`)
           .then((response) => {
+            console.log(response.data)
             users.value = response.data
           })
     }
 
+    const updateUser = (message: any) => {
+      console.log('updateUser', message)
+      console.log('updateUser', users.value)
+      if (message.action === 'LOGIN') {
+        console.log('updateUser, log action!')
+        users.value.push({
+          id: message.userId,
+          isLeader: message.isLeader
+        })
+      }
+
+      for (let index = 0; index < users.value.length; index++) {
+        if (users.value[index].id === message.userId) {
+          switch (message.action) {
+            case 'LOGOUT': {
+              users.value.slice(index, 1)
+            }
+              break
+            case 'LEADER': {
+              users.value[index].isLeader = message.isLeader
+            }
+              break
+          }
+          break
+        }
+      }
+    }
     const kickOutUser = (userId: string) => {
 
       axios.put(`/dixit/api/user/kick-out`, {
         userId: userId
       })
-          .then((response) => {
-            users.value = response.data
+          .then(() => {
           })
     }
 
     const changeLeader = (userId: string) => {
       axios.put(`/dixit/api/user/change-leader?userId=${userId}`)
-          .then((response) => {
-            users.value = response.data
+          .then(() => {
           })
     }
 
-    let intervalId: number | null = null
-
     onMounted(() => {
-      console.log(props.userId)
       getUsers()
-      intervalId = setInterval(() => {
-        getUsers()
-      }, 2000)
+      DixitWebSocket.addMessageListener(updateUser)
     })
 
     onUnmounted(() => {
-      if (intervalId) {
-        clearInterval(intervalId)
-      }
+
+      DixitWebSocket.removeMessageListener(updateUser)
     })
 
 

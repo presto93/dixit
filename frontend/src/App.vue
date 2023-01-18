@@ -53,7 +53,8 @@
 <script lang="ts">
 import {defineComponent, onMounted, ref} from 'vue'
 import axios from "axios";
-import {useRouter} from "vue-router";
+import {useRouter} from "vue-router"
+import {DixitWebSocket} from "@/components/WebSocket";
 
 export default defineComponent({
   name: 'App',
@@ -67,21 +68,7 @@ export default defineComponent({
 
     onMounted(() => {
       window.addEventListener("unload", logout)
-      let connection: WebSocket | null = null
-
-      console.log("Starting connection to WebSocket Server");
-      connection = new WebSocket('http://localhost:8080');
-
-      connection.onmessage = (event) => {
-        console.log("look, I got something from server");
-        console.log(event.data);
-      };
-
-      connection.onopen = (event) => {
-        console.log(event);
-        console.log("Successfully connected to the echo websocket server...");
-      };
-
+      DixitWebSocket.connect()
     })
 
     const login = () => {
@@ -90,7 +77,7 @@ export default defineComponent({
       }).then((response) => {
         userId.value = response.data.id
         userIdInput.value = null
-
+        DixitWebSocket.login(response.data.id)
         router.push(`/ready?userId=${userId.value}`)
       })
     }

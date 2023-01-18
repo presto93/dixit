@@ -1,6 +1,7 @@
-package com.yoon.dixit.user.dto;
+package com.yoon.dixit.socket.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yoon.dixit.user.dto.UserDto;
 import lombok.*;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -8,8 +9,10 @@ import lombok.*;
 @Builder
 @Setter
 @Getter
-public class UserDto {
-    private String id;
+public class SocketDto {
+    private String userId;
+
+    private String action;
 
     @JsonProperty("isLeader")
     private boolean isLeader;

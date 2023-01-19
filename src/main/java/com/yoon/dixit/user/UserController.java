@@ -20,7 +20,7 @@ public class UserController {
     private final UsersService usersService;
 
     @PostMapping("/login")
-    public UserDto startGame(@RequestBody LoginDto loginDto) {
+    public UserDto login(@RequestBody LoginDto loginDto) {
         return userService.login(loginDto.getUserId()).toDto();
     }
 

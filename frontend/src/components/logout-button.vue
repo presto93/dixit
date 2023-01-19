@@ -14,16 +14,12 @@ export default defineComponent({
   name: "HomeView",
   components: {},
   props: {
-    userId: {
-      type: String,
-      required: true
-    }
   },
   methods: {
 
     logout() {
       axios.post("/dixit/api/user/logout", {
-        userId: this.userId,
+        userId: UserHolder.id,
       }).then(() => {
       })
     }

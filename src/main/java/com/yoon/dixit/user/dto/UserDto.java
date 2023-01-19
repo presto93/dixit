@@ -1,6 +1,7 @@
 package com.yoon.dixit.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yoon.dixit.user.enums.PlayingStatus;
 import lombok.*;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -13,4 +14,6 @@ public class UserDto {
 
     @JsonProperty("isLeader")
     private boolean isLeader;
+
+    private PlayingStatus playingStatus;
 }

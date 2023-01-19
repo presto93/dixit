@@ -1,12 +1,13 @@
 import SockJS from 'sockjs-client'
+import {SocketMessage} from "@/types/SocketMessage";
+import {UserHolder} from "@/components/UserHolder";
 
 let socket: any = null
-let userId: string | null
-const onMessageListeners: Function[] = []
+const onMessageListeners: ((SocketMessage) => any)[] = []
 export const DixitWebSocket = {
     send: (action: string) => {
         socket.send(JSON.stringify({
-            userId: userId,
+            userId: UserHolder.id,
             action: action
         }));
     },
@@ -16,30 +17,25 @@ export const DixitWebSocket = {
     },
 
     onMessage(message: any) {
-        console.log('message received!', message)
-        console.log('message received!', onMessageListeners)
         onMessageListeners.forEach((onMessageListener) => {
-            console.log(message.data)
             onMessageListener(JSON.parse(message.data))
         })
     },
 
-    login(loggedInUserId: string) {
-        userId = loggedInUserId
+    login() {
         this.send('LOGIN')
     },
     logout() {
-        if (userId) {
-            this.send('LOGOUT')
+        this.send('LOGOUT')
+    },
+
+    addMessageListener(listener: ((message: SocketMessage) => any) | (() => any)) {
+        if (onMessageListeners.indexOf(listener) === -1) {
+            onMessageListeners.push(listener)
         }
-        userId = null
     },
 
-    addMessageListener(listener: (message: any) => any) {
-        onMessageListeners.push(listener)
-    },
-
-    removeMessageListener(listener: (message: any) => any) {
+    removeMessageListener(listener: ((message: SocketMessage) => any) | (() => any)) {
         const index = onMessageListeners.indexOf(listener)
 
         if (index >= 0) {

@@ -18,12 +18,10 @@ public class PlayController {
 
     private final PlayService playService;
 
-    private final UserService userService;
 
-
-    @PutMapping("/ready")
-    public ReadyStatus ready(@RequestParam String userId) {
-        return playService.ready(userId);
+    @PutMapping("/ready/{isReady}")
+    public PlayingStatus ready(@RequestParam String userId, @PathVariable Boolean isReady) {
+        return playService.changeReadyStatus(userId, isReady);
     }
 
     @GetMapping("/status")
@@ -38,7 +36,6 @@ public class PlayController {
 
     @GetMapping("/card")
     public List<Card> getCards() {
-
         return playService.getCards();
     }
 

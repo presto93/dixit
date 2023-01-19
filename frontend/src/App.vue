@@ -3,9 +3,9 @@
     <v-main
         v-if="userId"
     >
+      {{ userId }}님 안녕하세요!
       <router-view/>
       <v-bottom-navigation>
-
         <v-btn
             @click="goToAdminPage"
             x-small
@@ -31,7 +31,7 @@
         v-else
     >
       <v-card id="login-area"
-        align="center"
+              align="center"
       >
         <v-text-field
             v-model="userIdInput"
@@ -51,10 +51,12 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref} from 'vue'
+import {defineComponent, onMounted, onUnmounted, Ref, ref} from 'vue'
 import axios from "axios";
 import {useRouter} from "vue-router"
 import {DixitWebSocket} from "@/components/WebSocket";
+import {SocketMessage} from "@/types/SocketMessage";
+import {UserHolder} from "@/components/UserHolder";
 
 export default defineComponent({
   name: 'App',
@@ -63,22 +65,25 @@ export default defineComponent({
 
     const router = useRouter()
 
-    const userId = ref(null)
+    const userId: Ref<string | null> = ref(null)
     const userIdInput = ref(null)
 
-    onMounted(() => {
-      window.addEventListener("unload", logout)
-      DixitWebSocket.connect()
-    })
-
     const login = () => {
+      UserHolder.id = null
+      UserHolder.isLeader = false
+
       axios.post("/dixit/api/user/login", {
         userId: userIdInput.value,
       }).then((response) => {
+        console.log(response)
+        console.log(response.data.id)
+        console.log(response.data.isLeader)
         userId.value = response.data.id
+        UserHolder.id = response.data.id
+        UserHolder.isLeader = response.data.isLeader
         userIdInput.value = null
-        DixitWebSocket.login(response.data.id)
-        router.push(`/ready?userId=${userId.value}`)
+        DixitWebSocket.login()
+        router.push(`/ready`)
       })
     }
 
@@ -86,24 +91,48 @@ export default defineComponent({
       if (!userId.value) {
         return
       }
+      DixitWebSocket.logout()
       axios.put("/dixit/api/user/logout", {
-        userId: userId.value,
+        id: userId.value,
       }).then(() => {
         userId.value = null
         router.push(`/`)
       }).catch(() => {
-
         router.push(`/`)
       })
     }
 
     const startGame = () => {
-      router.push(`/ready?userId=${userId.value}`)
+      router.push(`/ready`)
     }
 
     const goToAdminPage = () => {
-      router.push(`/admin?userId=${userId.value}`)
+      router.push(`/admin`)
     }
+
+    const updateUser = (message: SocketMessage) => {
+      if (message.userId !== userId.value) {
+        return
+      }
+      switch (message.action) {
+        case 'LOGOUT': {
+          UserHolder.id = null
+          UserHolder.isLeader = false
+          userId.value = null
+        }
+      }
+    }
+
+    onMounted(() => {
+      window.addEventListener("unload", logout)
+      DixitWebSocket.connect()
+      DixitWebSocket.addMessageListener(updateUser)
+    })
+
+    onUnmounted(() => {
+      DixitWebSocket.removeMessageListener(updateUser)
+    })
+
 
     return {
       userId,

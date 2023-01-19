@@ -27,6 +27,7 @@
 import {defineComponent, onMounted, ref} from 'vue';
 import axios from "axios";
 import {useRouter} from "vue-router";
+import {UserHolder} from "@/components/UserHolder";
 
 export default defineComponent({
   name: "CheckCardView",
@@ -36,12 +37,8 @@ export default defineComponent({
   },
   computed: {},
   props: {
-    userId: {
-      type: String,
-      required: true
-    },
   },
-  setup(props) {
+  setup() {
     const router = useRouter()
 
     const cards = ref([])
@@ -60,7 +57,7 @@ export default defineComponent({
     })
 
     const selectCard = (card: any) => {
-      const url = `/dixit/api/play/select?userId=${props.userId}&cardId=${card.id}`
+      const url = `/dixit/api/play/select?userId=${UserHolder.id}&cardId=${card.id}`
       axios.post(url)
           .then(() => {
             card.isTarget = true
@@ -69,7 +66,7 @@ export default defineComponent({
     }
 
     const finishGame = () => {
-      router.push(`/display-card?userId=${props.userId}`)
+      router.push(`/display-card?userId=${UserHolder.id}`)
     }
 
 

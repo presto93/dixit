@@ -24,7 +24,7 @@ public class UserService {
             usersService.add(user);
         }
 
-        return user;
+        return usersService.get(user.getId());
     }
 
     public void logout(String id) {
@@ -37,6 +37,10 @@ public class UserService {
 
     public void ready(String id) {
         usersService.get(id).setPlayingStatus(PlayingStatus.READY);
+    }
+
+    public void unready(String id) {
+        usersService.get(id).setPlayingStatus(PlayingStatus.WAITING);
     }
 
     public void play(String id) {

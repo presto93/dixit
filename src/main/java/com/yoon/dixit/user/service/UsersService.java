@@ -71,12 +71,10 @@ public class UsersService {
     }
 
     public void remove(User user) {
-        users.remove(user.getId());
-
         if (isLeader(user.getId())) {
             changeLeader();
         }
-
+        users.remove(user.getId());
     }
 
     public boolean isLeader(String id) {
@@ -95,7 +93,7 @@ public class UsersService {
                 ReadyStatus.ALL :
                 ReadyStatus.SOME;
     }
-    
+
     private void setLeader(User newLeader) {
         if (Objects.nonNull(leader)) {
             leader.setLeader(false);
@@ -113,5 +111,11 @@ public class UsersService {
                 .stream()
                 .map(User::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public void startGame() {
+        users.forEach((userId, user) ->
+                user.setPlayingStatus(PlayingStatus.PLAYING)
+        );
     }
 }

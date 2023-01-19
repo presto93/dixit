@@ -12,6 +12,7 @@ module.exports = defineConfig({
             },
             '/ws': {
                 target: 'http://localhost:8080/', // 프록시를 설정할 도메인
+                ws: true,
                 changeOrigin: true,
             },
         },
@@ -23,4 +24,5 @@ module.exports = defineConfig({
 		}
     },
     publicPath: '/dixit',
+    outputDir: '..\\src\\main\\resources\\static\\'
 })

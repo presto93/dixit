@@ -20,6 +20,7 @@ public class User {
         return UserDto.builder()
                 .id(id)
                 .isLeader(isLeader)
+                .playingStatus(playingStatus)
                 .build();
     }
 }

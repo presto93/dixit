@@ -15,10 +15,8 @@
       </v-col>
 
       <v-col
-
           align="center"
       >
-
         <v-icon
             v-if="!user.isLeader"
             @click="changeLeader(user.id)"
@@ -28,10 +26,8 @@
       </v-col>
 
       <v-col
-
           align="center"
       >
-
         <v-icon
             v-if="user.id !== userId"
             @click="kickOutUser(user.id)"
@@ -47,26 +43,20 @@
 </template>
 
 <script lang="ts">
-import type {Ref} from 'vue'
 import {defineComponent, onMounted, onUnmounted, ref} from 'vue';
 import axios from "axios";
+import type {Ref} from 'vue'
 import {DixitWebSocket} from "@/components/WebSocket";
+import {SocketMessage} from "@/types/SocketMessage";
+import {UserHolder} from "@/components/UserHolder";
 
 export default defineComponent({
-  name: "DisplayCardView",
+  name: "AdminView",
   components: {},
-  created() {
-
-  },
-  computed: {},
-  props: {
-    userId: {
-      type: String,
-      required: true
-    },
-  },
   setup() {
     const users: Ref<any[]> = ref([])
+
+    const userId = UserHolder.id
 
     const getUsers = () => {
       axios.get(`/dixit/api/user`)
@@ -76,7 +66,7 @@ export default defineComponent({
           })
     }
 
-    const updateUser = (message: any) => {
+    const updateUser = (message: SocketMessage) => {
       console.log('updateUser', message)
       console.log('updateUser', users.value)
       if (message.action === 'LOGIN') {
@@ -85,21 +75,22 @@ export default defineComponent({
           id: message.userId,
           isLeader: message.isLeader
         })
-      }
+      } else {
 
-      for (let index = 0; index < users.value.length; index++) {
-        if (users.value[index].id === message.userId) {
-          switch (message.action) {
-            case 'LOGOUT': {
-              users.value.slice(index, 1)
+        for (let index = 0; index < users.value.length; index++) {
+          if (users.value[index].id === message.userId) {
+            switch (message.action) {
+              case 'LOGOUT': {
+                users.value.slice(index, 1)
+              }
+                break
+              case 'LEADER': {
+                users.value[index].isLeader = message.isLeader
+              }
+                break
             }
-              break
-            case 'LEADER': {
-              users.value[index].isLeader = message.isLeader
-            }
-              break
+            break
           }
-          break
         }
       }
     }
@@ -124,15 +115,14 @@ export default defineComponent({
     })
 
     onUnmounted(() => {
-
       DixitWebSocket.removeMessageListener(updateUser)
     })
-
 
     return {
       users,
       kickOutUser,
       changeLeader,
+      userId,
     }
   },
 })

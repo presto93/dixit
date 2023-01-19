@@ -5,6 +5,7 @@ import com.yoon.dixit.user.enums.PlayingStatus;
 import com.yoon.dixit.user.enums.ReadyStatus;
 import com.yoon.dixit.user.service.UserService;
 import com.yoon.dixit.user.service.UsersService;
+import com.yoon.dixit.user.vo.User;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -105,10 +106,20 @@ public class PlayService {
         return selectedCard.get(displayOrder.remove());
     }
 
-    synchronized public ReadyStatus ready(String userId) {
-        userService.ready(userId);
+    public PlayingStatus changeReadyStatus(String userId, boolean isReady) {
+        if (isReady) {
+            userService.ready(userId);
+        } else {
+            userService.unready(userId);
+        }
 
-        return usersService.getReadyStatus(MIN_PAYER_COUNT);
+        playingStatus = usersService.getReadyStatus(MIN_PAYER_COUNT) == ReadyStatus.ALL ? PlayingStatus.READY : PlayingStatus.WAITING;
+
+        if (playingStatus == PlayingStatus.READY) {
+            startGame();
+        }
+
+        return playingStatus;
     }
 
     public PlayingStatus getPlayingStatus() {
@@ -117,6 +128,7 @@ public class PlayService {
 
     public void startGame() {
         initGame();
+        usersService.startGame();
         playingStatus = PlayingStatus.PLAYING;
     }
 }

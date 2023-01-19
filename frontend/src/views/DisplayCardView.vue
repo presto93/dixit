@@ -30,10 +30,6 @@ export default defineComponent({
   },
   computed: {},
   props: {
-    userId: {
-      type: String,
-      required: true
-    },
   },
   setup() {
     const card = ref(null)

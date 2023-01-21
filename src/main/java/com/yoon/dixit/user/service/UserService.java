@@ -28,7 +28,13 @@ public class UserService {
     }
 
     public void logout(String id) {
-        usersService.remove(id);
+        try {
+            usersService.remove(id);
+        } catch (Exception e) {
+            System.out.println("user id : " + id);
+            System.out.println(usersService.getAll());
+            throw e;
+        }
     }
 
     public void finishGame(String id) {
@@ -44,7 +50,7 @@ public class UserService {
     }
 
     public void play(String id) {
-        usersService.get(id).setPlayingStatus(PlayingStatus.PLAYING);
+        usersService.get(id).setPlayingStatus(PlayingStatus.CHECK_CARD);
     }
 
     public boolean isLeader(String id) {

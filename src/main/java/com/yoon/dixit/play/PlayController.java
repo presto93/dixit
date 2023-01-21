@@ -2,8 +2,6 @@ package com.yoon.dixit.play;
 
 import com.yoon.dixit.play.vo.Card;
 import com.yoon.dixit.user.enums.PlayingStatus;
-import com.yoon.dixit.user.enums.ReadyStatus;
-import com.yoon.dixit.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +15,6 @@ import java.util.List;
 public class PlayController {
 
     private final PlayService playService;
-
 
     @PutMapping("/ready/{isReady}")
     public PlayingStatus ready(@RequestParam String userId, @PathVariable Boolean isReady) {
@@ -40,8 +37,8 @@ public class PlayController {
     }
 
     @PostMapping("/select")
-    public void selectCard(@RequestParam String userId, @RequestParam int cardId) {
-        playService.selectCard(userId, cardId);
+    public PlayingStatus selectCard(@RequestParam String userId, @RequestParam int cardId) {
+        return playService.selectCard(userId, cardId);
     }
 
     @GetMapping("/finish")

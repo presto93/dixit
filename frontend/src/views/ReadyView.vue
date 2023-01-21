@@ -7,7 +7,7 @@
 
     <v-btn
         @click="ready"
-        x-large
+        size="x-large"
         :disabled="submitting"
         :color="readyButtonColor"
     >
@@ -81,7 +81,7 @@ export default defineComponent({
           .then((response) => {
             console.log(response.data)
             submitting.value = false
-            if (response.data === 'PLAYING') {
+            if (response.data === 'CHECK_CARD') {
               DixitWebSocket.send('START')
               router.push(`/check-card?userId=${UserHolder.id}&isLeader=${UserHolder.isLeader}`)
             } else {

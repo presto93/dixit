@@ -5,7 +5,6 @@ import com.yoon.dixit.user.enums.PlayingStatus;
 import com.yoon.dixit.user.enums.ReadyStatus;
 import com.yoon.dixit.user.service.UserService;
 import com.yoon.dixit.user.service.UsersService;
-import com.yoon.dixit.user.vo.User;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class PlayService {
     private static final List<Card> cards = new ArrayList<>();
     private static final LinkedList<Card> dummy = new LinkedList<>();
 
-    private final List<Card> selectedCard = new ArrayList<>();
+    private final List<Card> selectedCards = new ArrayList<>();
     private Card targetCard = null;
     private final LinkedList<Integer> displayOrder = new LinkedList<>();
 
@@ -35,10 +34,20 @@ public class PlayService {
     // cards to immutable list
 
     public void initGame() {
+
+        System.out.println("init game start!");
+
+        System.out.println(cards);
+        System.out.println(dummy);
         // for test
         if (CollectionUtils.isEmpty(cards)) {
-            for (int i = 0; i < TOTAL_NUMBER_OF_CARD; i++) {
+            for (int i = 0; i < TOTAL_NUMBER_OF_CARD / 2; i++) {
                 cards.add(Card.builder()
+                        .filename(String.format("h-%d.png", i))
+                        .id(i)
+                        .build());
+                cards.add(Card.builder()
+                        .filename(String.format("v-%d.png", i))
                         .id(i)
                         .build());
             }
@@ -47,7 +56,10 @@ public class PlayService {
         // for test
 
         Collections.shuffle(dummy);
-        dummy.addAll(selectedCard);
+        dummy.addAll(selectedCards);
+        System.out.println(cards);
+        System.out.println(dummy);
+        System.out.println("init game end!");
     }
 
     synchronized public List<Card> getCards() {
@@ -55,7 +67,7 @@ public class PlayService {
         List<Card> userCard = new ArrayList<>();
 
         for (int i = 0; i < MAX_NUMBER_OF_CARD; i++) {
-            userCard.add(dummy.pollFirst());
+            userCard.add(dummy.remove());
         }
 
         return userCard;
@@ -82,20 +94,23 @@ public class PlayService {
         return cards.get(cardId);
     }
 
-    public void selectCard(String userId, int cardId) {
+    public PlayingStatus selectCard(String userId, int cardId) {
 
         if (usersService.isLeader(userId)) {
             arrangeGame();
             selectTargetCard(cardId);
 
         } else {
-
             selectCard(getCard(cardId));
         }
+
+        playingStatus = CollectionUtils.size(selectedCards) == usersService.getUserCount() ? PlayingStatus.SELECTED_CARD : PlayingStatus.CHECK_CARD;
+
+        return playingStatus;
     }
 
     public void selectCard(Card card) {
-        selectedCard.add(card);
+        selectedCards.add(card);
     }
 
     public Card finishGame() {
@@ -103,7 +118,7 @@ public class PlayService {
     }
 
     public Card getDisplayCard() {
-        return selectedCard.get(displayOrder.remove());
+        return selectedCards.get(displayOrder.remove());
     }
 
     public PlayingStatus changeReadyStatus(String userId, boolean isReady) {
@@ -113,10 +128,11 @@ public class PlayService {
             userService.unready(userId);
         }
 
-        playingStatus = usersService.getReadyStatus(MIN_PAYER_COUNT) == ReadyStatus.ALL ? PlayingStatus.READY : PlayingStatus.WAITING;
-
-        if (playingStatus == PlayingStatus.READY) {
+        if (usersService.getReadyStatus(MIN_PAYER_COUNT) == ReadyStatus.ALL) {
+            playingStatus = PlayingStatus.READY;
             startGame();
+        } else {
+            playingStatus = PlayingStatus.WAITING;
         }
 
         return playingStatus;
@@ -129,6 +145,6 @@ public class PlayService {
     public void startGame() {
         initGame();
         usersService.startGame();
-        playingStatus = PlayingStatus.PLAYING;
+        playingStatus = PlayingStatus.CHECK_CARD;
     }
 }

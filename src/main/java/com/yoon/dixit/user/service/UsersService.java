@@ -89,9 +89,16 @@ public class UsersService {
 
         Map<PlayingStatus, List<User>> groupedUsers = users.values().stream().collect(Collectors.groupingBy(User::getPlayingStatus));
 
-        return (CollectionUtils.size(groupedUsers.get(PlayingStatus.READY)) == MapUtils.size(users)) ?
-                ReadyStatus.ALL :
-                ReadyStatus.SOME;
+        int readyCount = CollectionUtils.size(groupedUsers.get(PlayingStatus.READY));
+
+        if (readyCount == 0) {
+            return ReadyStatus.NONE;
+        }
+        if (readyCount == MapUtils.size(users)) {
+            return ReadyStatus.ALL;
+        }
+
+        return ReadyStatus.SOME;
     }
 
     private void setLeader(User newLeader) {
@@ -115,7 +122,7 @@ public class UsersService {
 
     public void startGame() {
         users.forEach((userId, user) ->
-                user.setPlayingStatus(PlayingStatus.PLAYING)
+                user.setPlayingStatus(PlayingStatus.CHECK_CARD)
         );
     }
 }

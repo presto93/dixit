@@ -8,19 +8,19 @@
       <v-bottom-navigation>
         <v-btn
             @click="goToAdminPage"
-            x-small
+            size="x-small"
         >
           admin
         </v-btn>
         <v-btn
             @click="startGame"
-            x-small
+            size="x-small"
         >
           dixit
         </v-btn>
         <v-btn
             @click="logout"
-            x-small
+            size="x-small"
         >
           logout
         </v-btn>
@@ -75,9 +75,6 @@ export default defineComponent({
       axios.post("/dixit/api/user/login", {
         userId: userIdInput.value,
       }).then((response) => {
-        console.log(response)
-        console.log(response.data.id)
-        console.log(response.data.isLeader)
         userId.value = response.data.id
         UserHolder.id = response.data.id
         UserHolder.isLeader = response.data.isLeader
@@ -92,6 +89,7 @@ export default defineComponent({
         return
       }
       DixitWebSocket.logout()
+      userId.value = null
       axios.put("/dixit/api/user/logout", {
         id: userId.value,
       }).then(() => {
@@ -133,6 +131,13 @@ export default defineComponent({
       DixitWebSocket.removeMessageListener(updateUser)
     })
 
+    const overlay = ref(true)
+    const overlay2 = ref(true)
+
+    const test = () => {
+      overlay.value = !overlay.value
+      console.log(overlay.value)
+    }
 
     return {
       userId,
@@ -141,6 +146,9 @@ export default defineComponent({
       logout,
       startGame,
       goToAdminPage,
+      test,
+      overlay,
+      overlay2,
     }
   },
 

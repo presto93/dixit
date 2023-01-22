@@ -47,6 +47,13 @@
         </v-btn>
       </v-card>
     </v-main>
+
+    <v-dialog
+        v-model="showDialog">
+
+      {{ dialogMessage }}
+
+    </v-dialog>
   </v-app>
 </template>
 
@@ -67,6 +74,9 @@ export default defineComponent({
 
     const userId: Ref<string | null> = ref(null)
     const userIdInput = ref(null)
+
+    const showDialog = ref(false)
+    const dialogMessage = ref('')
 
     const login = () => {
       UserHolder.id = null
@@ -94,8 +104,10 @@ export default defineComponent({
         id: userId.value,
       }).then(() => {
         userId.value = null
-      }).catch(() => {
-        // TODO: notify
+      }).catch(error => {
+        console.log(error)
+        dialogMessage.value = error
+        showDialog.value = true
       })
     }
 
@@ -133,6 +145,8 @@ export default defineComponent({
     return {
       userId,
       userIdInput,
+      showDialog,
+      dialogMessage,
       login,
       logout,
       startGame,

@@ -1,16 +1,10 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import ReadyView from '../views/ReadyView.vue'
 import CheckCardView from '../views/CheckCardView.vue'
 import DisplayCardView from '../views/DisplayCardView.vue'
 import AdminView from '../views/AdminView.vue'
 
 const routes: Array<RouteRecordRaw> = [
-    {
-        path: '/',
-        name: 'home',
-        component: HomeView,
-    },
     {
         path: '/ready',
         name: 'ready',

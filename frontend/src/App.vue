@@ -94,9 +94,8 @@ export default defineComponent({
         id: userId.value,
       }).then(() => {
         userId.value = null
-        router.push(`/`)
       }).catch(() => {
-        router.push(`/`)
+        // TODO: notify
       })
     }
 
@@ -131,14 +130,6 @@ export default defineComponent({
       DixitWebSocket.removeMessageListener(updateUser)
     })
 
-    const overlay = ref(true)
-    const overlay2 = ref(true)
-
-    const test = () => {
-      overlay.value = !overlay.value
-      console.log(overlay.value)
-    }
-
     return {
       userId,
       userIdInput,
@@ -146,16 +137,8 @@ export default defineComponent({
       logout,
       startGame,
       goToAdminPage,
-      test,
-      overlay,
-      overlay2,
     }
   },
-
-  data() {
-    return {}
-  },
-  methods: {},
 })
 </script>
 

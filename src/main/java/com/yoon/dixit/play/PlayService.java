@@ -1,5 +1,6 @@
 package com.yoon.dixit.play;
 
+import com.yoon.dixit.exceptions.IllegalPlayingStatusException;
 import com.yoon.dixit.play.vo.Card;
 import com.yoon.dixit.user.enums.PlayingStatus;
 import com.yoon.dixit.user.enums.ReadyStatus;
@@ -35,6 +36,10 @@ public class PlayService {
 
     public void initGame() {
 
+        if (playingStatus != PlayingStatus.READY) {
+            throw new IllegalPlayingStatusException(PlayingStatus.READY, playingStatus);
+        }
+
         System.out.println("init game start!");
 
         System.out.println(cards);
@@ -64,6 +69,10 @@ public class PlayService {
 
     synchronized public List<Card> getCards() {
 
+        if (playingStatus != PlayingStatus.CHECK_CARD) {
+            throw new IllegalPlayingStatusException(PlayingStatus.READY, playingStatus);
+        }
+
         List<Card> userCard = new ArrayList<>();
 
         for (int i = 0; i < MAX_NUMBER_OF_CARD; i++) {
@@ -74,6 +83,13 @@ public class PlayService {
     }
 
     public void arrangeGame() {
+
+
+        if (playingStatus != PlayingStatus.DISPLAY_CARD) {
+            throw new IllegalPlayingStatusException(PlayingStatus.READY, playingStatus);
+        }
+
+
         displayOrder.clear();
         int playerCount = usersService.getUserCount();
 
@@ -85,6 +101,11 @@ public class PlayService {
     }
 
     public void selectTargetCard(int cardId) {
+
+        if (playingStatus != PlayingStatus.CHECK_CARD) {
+            throw new IllegalPlayingStatusException(PlayingStatus.READY, playingStatus);
+        }
+
         targetCard = getCard(cardId);
         targetCard.setTarget(true);
         selectCard(targetCard);
